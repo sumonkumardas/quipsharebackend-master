@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/aspnetcore:2.1 AS base
+FROM mcr.microsoft.com/dotnet/sdk:2.1.816-stretch AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM mcr.microsoft.com/aspnetcore-build:2.1 AS build
+FROM mcr.microsoft.com/dotnet/aspnet:2.1.28-stretch-slim AS build
 WORKDIR /src
 COPY SubQuip.Web.sln ./
 COPY SubQuip.Common/*.csproj ./SubQuip.Common/
