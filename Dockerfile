@@ -6,6 +6,7 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/aspnet:2.1.28-stretch-slim AS build
 WORKDIR /src
+ls
 COPY ["SubQuip.Web/SubQuip.WebApi.csproj", "SubQuip.Web/"]
 COPY ["SubQuip.Service/SubQuip.Business.csproj", "SubQuip.Service/"]
 COPY ["SubQuip.Common/SubQuip.Common.csproj", "SubQuip.Common/"]
