@@ -1,28 +1,43 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/sdk:2.1.816-stretch AS base
+FROM mcr.microsoft.com/dotnet/aspnet:2.1 AS base
 WORKDIR /app
 EXPOSE 80
 
 FROM msimons/aspnetcore-build:2 AS build
 WORKDIR /src
+COPY SubQuip.Web.sln ./
+COPY SubQuip.Common/*.csproj ./SubQuip.Common/
+COPY SubQuip.Data/*.csproj ./SubQuip.Data/
+COPY SubQuip.Entity/*.csproj ./SubQuip.Entity/
+COPY SubQuip.Model/*.csproj ./SubQuip.Model/
+COPY SubQuip.Service/*.csproj ./SubQuip.Service/
+COPY SubQuip.Web/*.csproj ./SubQuip.Web/
 
-COPY ["SubQuip.Web/SubQuip.WebApi.csproj", "SubQuip.Web/"]
-COPY ["SubQuip.Service/SubQuip.Business.csproj", "SubQuip.Service/"]
-COPY ["SubQuip.Common/SubQuip.Common.csproj", "SubQuip.Common/"]
-COPY ["SubQuip.Entity/SubQuip.Entity.csproj", "SubQuip.Entity/"]
-COPY ["SubQuip.Data/SubQuip.Data.csproj", "SubQuip.Data/"]
-COPY ["SubQuip.Model/SubQuip.ViewModel.csproj", "SubQuip.Model/"]
-RUN dotnet restore "SubQuip.Web/SubQuip.WebApi.csproj"
+RUN dotnet restore
 COPY . .
-WORKDIR "/src/SubQuip.Web"
-RUN ls -a
-RUN dotnet build "SubQuip.WebApi.csproj" -c Release -o /app/build
+
+WORKDIR /src/SubQuip.Web
+RUN dotnet restore && dotnet build --no-restore -c Release -o /app
+
+#WORKDIR /src/SubQuip.Common
+#RUN dotnet build --no-restore -c Release -o /app
+
+#WORKDIR /src/SubQuip.Data
+#RUN dotnet build --no-restore -c Release -o /app
+
+#WORKDIR /src/SubQuip.Entity
+#RUN dotnet build --no-restore -c Release -o /app
+
+##WORKDIR /src/SubQuip.Model
+#RUN dotnet build --no-restore -c Release -o /app
+
+#WORKDIR /src/SubQuip.Service
+#RUN dotnet build --no-restore -c Release -o /app
+
 
 FROM build AS publish
-RUN dotnet publish "SubQuip.WebApi.csproj" -c Release -o /app/publish
+RUN dotnet publish --no-restore -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "SubQuip.WebApi.dll"]
