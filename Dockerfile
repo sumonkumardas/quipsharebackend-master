@@ -4,9 +4,9 @@ FROM mcr.microsoft.com/dotnet/sdk:2.1.816-stretch AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/aspnet:2.1.28-stretch-slim AS build
+FROM msimons/aspnetcore-build:2 AS build
 WORKDIR /src
-ls
+
 COPY ["SubQuip.Web/SubQuip.WebApi.csproj", "SubQuip.Web/"]
 COPY ["SubQuip.Service/SubQuip.Business.csproj", "SubQuip.Service/"]
 COPY ["SubQuip.Common/SubQuip.Common.csproj", "SubQuip.Common/"]
@@ -16,6 +16,7 @@ COPY ["SubQuip.Model/SubQuip.ViewModel.csproj", "SubQuip.Model/"]
 RUN dotnet restore "SubQuip.Web/SubQuip.WebApi.csproj"
 COPY . .
 WORKDIR "/src/SubQuip.Web"
+RUN ls -a
 RUN dotnet build "SubQuip.WebApi.csproj" -c Release -o /app/build
 
 FROM build AS publish
